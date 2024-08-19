@@ -1,0 +1,57 @@
+
+server:
+    port: 8001
+spring:
+    application:
+        name: User-Service
+
+    config:
+      import: optional:configserver:http://localhost:8085
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+     show-details: "ALWAYS"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotel:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
+  retry:
+    instances:
+      ratingHotelServices:
+        maxAttempts: 3
+        waitDuration: 5s
+
+  ratelimiter:
+    instances:
+      ratelimiter:
+        timeoutDuration: 5s
+        limitRefreshPeriod : 5
+        limitForPeriod : 10
+
+
+
+
